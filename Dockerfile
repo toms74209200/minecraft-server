@@ -15,9 +15,7 @@ RUN echo eula=true > eula.txt
 
 FROM gcr.io/distroless/java17-debian11
 
-ARG SPIGOT_VERSION
-
-COPY --from=build-spigotmc /usr/local/bin/spigot-${SPIGOT_VERSION}.jar /usr/local/bin/spigot-${SPIGOT_VERSION}.jar 
+COPY --from=build-spigotmc /usr/local/bin/server.jar /usr/local/bin/server.jar
 COPY --from=build-spigotmc /usr/local/bin/eula.txt /usr/local/bin/eula.txt
 WORKDIR /usr/local/bin
 CMD ["-Xmx2048M", "-Xms1024M", "-jar", "/usr/local/bin/server.jar", "nogui"]
