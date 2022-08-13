@@ -1,0 +1,25 @@
+name: Build and upload image
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-buildx-actions@v1
+      - uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{GITHUB_ACTION_REPOSITORY}}:latest
+            ghcr.io/${{GITHUB_ACTION_REPOSITORY}}:${GITHUB_REF#refs/*/}
