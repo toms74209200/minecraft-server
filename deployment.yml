@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: minecraft-server
+  name: minecraft-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minecraft-server
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: minecraft-server
+    spec:
+      containers:
+      - image: ghcr.io/toms74209200/minecraft-server:latest
+        name: minecraft-server
+        ports:
+          - containerPort: 25565
+        volumeMounts:
+          - mountPath: /usr/local/bin/world
+            name: pvc-data
+      volumes:
+        - name: pvc-data
+          persistentVolumeClaim:
+            claimName: pvc-data
+status: {}
