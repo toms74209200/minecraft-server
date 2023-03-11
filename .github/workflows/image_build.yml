@@ -3,7 +3,7 @@ name: Build and upload image
 on:
   push:
     tags:
-      - "v*"
+      - "spigot_*"
 
 jobs:
   build:
