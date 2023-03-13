@@ -20,6 +20,13 @@ spec:
         name: minecraft-server
         ports:
           - containerPort: 25565
+        resources:
+          requests:
+            memory: "2G"
+            cpu: "1"
+          limits:
+            memory: "3G"
+            cpu: "1"
         volumeMounts:
           - mountPath: /usr/local/bin/world
             name: pvc-data
