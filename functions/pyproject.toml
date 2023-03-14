@@ -1,0 +1,29 @@
+[tool.pysen]
+version = "0.10.3"
+
+[tool.pysen.lint]
+enable_black = true
+enable_flake8 = true
+enable_isort = true
+enable_mypy = false
+mypy_preset = "strict"
+line_length = 120
+py_version = "py39"
+isort_known_third_party = ["numpy"]
+isort_known_first_party = ["pysen"]
+mypy_ignore_packages = ["pysen.generated.*"]
+mypy_path = ["stubs"]
+[[tool.pysen.lint.mypy_targets]]
+  paths = [".", "tests/"]
+
+[tool.pysen.lint.source]
+  includes = ["."]
+  include_globs = ["**/*.template"]
+  excludes = ["third_party/"]
+  exclude_globs = ["**/*_grpc.py"]
+
+[tool.pysen.lint.mypy_modules."pysen.scripts"]
+  preset = "entry"
+
+[tool.pysen.lint.mypy_modules."numpy"]
+  ignore_errors = true
