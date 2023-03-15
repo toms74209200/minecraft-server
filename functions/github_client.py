@@ -2,7 +2,7 @@ import shutil
 import tarfile
 
 import requests
-from env import GITHUB_OWNER, GITHUB_REPOSITORY
+from env import GITHUB_OWNER, GITHUB_REPOSITORY, PROPERTY_KEY_NAME, PROPERTY_KEY_TARBALL
 
 GITHUB_API_URL = "https://api.github.com"
 GITHUB_API_REPOSITORY_PATH = "/repos"
