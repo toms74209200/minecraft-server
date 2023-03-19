@@ -1,7 +1,7 @@
 import glob
-from logging import DEBUG, getLogger
 import time
 from enum import Enum, auto
+from logging import DEBUG, getLogger
 
 import flask
 import functions_framework
@@ -16,7 +16,7 @@ from env import (
 )
 from flask import make_response
 from github_client import extract_archive, get_latest_release, get_release_archive
-from k8s_client import apply_deployment, apply_service, delete_deployment, delete_service, get_pods, get_services
+from k8s_client import K8sClient
 from verify import verify
 
 logger = getLogger(__name__)
@@ -51,18 +51,19 @@ def create() -> bool:
     fetch_resources()
     resources = glob.glob("*.yml")
     logger.info(f"resources: {resources}")
-    apply_deployment(DEPLOYMENT_FILE_PATH)
-    apply_service(LOADBALANCER_FILE_PATH)
+    k8s = K8sClient()
+    k8s.apply_deployment(DEPLOYMENT_FILE_PATH)
+    k8s.apply_service(LOADBALANCER_FILE_PATH)
 
     created = False
     interval = INTERVAL_SECONDS
     while not created:
         pods_created = False
-        pods = get_pods(POD_LABEL)
+        pods = k8s.get_pods(POD_LABEL)
         pods_created = len(pods) > 0
         for i in pods:
             logger.debug("%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
-        services = get_services(SERVICE_NAMESPACE)
+        services = k8s.get_services(SERVICE_NAMESPACE)
         service_created = False
         for i in services:
             logger.debug(
@@ -87,14 +88,15 @@ def create() -> bool:
 
 def delete() -> bool:
     logger.info("delete")
-    delete_deployment(POD_LABEL)
-    delete_service(LOADBALANCER_NAME)
+    k8s = K8sClient()
+    k8s.delete_deployment(POD_LABEL)
+    k8s.delete_service(LOADBALANCER_NAME)
     deleted = False
     interval = INTERVAL_SECONDS
     while not deleted:
-        pods = get_pods(POD_LABEL)
+        pods = k8s.get_pods(POD_LABEL)
         pods_deleted = not pods
-        services = get_services(SERVICE_NAMESPACE)
+        services = k8s.get_services(SERVICE_NAMESPACE)
         service_deleted = False
         for i in services:
             service_deleted = i.metadata.name != LOADBALANCER_NAME
