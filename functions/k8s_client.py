@@ -116,7 +116,7 @@ if __name__ == "__main__":
         time.sleep(interval)
         interval = interval * 2
         if interval >= 300:
-            print("Delete faild.")
+            print("Delete failed.")
             sys.exit(1)
 
     print("Delete success!")

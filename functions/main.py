@@ -17,7 +17,6 @@ from flask import make_response
 from github_client import extract_archive, get_latest_release, get_release_archive
 from google.cloud.logging import DEBUG, Client, Logger, getLogger
 from k8s_client import K8sClient
-from verify import verify
 
 PROPERTY_ORDER = "order"
 INTERVAL_SECONDS = 10
