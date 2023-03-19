@@ -22,6 +22,7 @@ jobs:
       with:
         name: ${{ vars.FUNCTIONS_NAME }}
         runtime: python311
+        entry_point: "manage"
         region: asia-northeast1
         source_dir: "functions"
         env_vars: |
