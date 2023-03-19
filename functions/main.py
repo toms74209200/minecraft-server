@@ -15,7 +15,7 @@ from env import (
 )
 from flask import make_response
 from github_client import extract_archive, get_latest_release, get_release_archive
-from google.cloud.logging import DEBUG, Client, Logger, getLogger
+from google.cloud.logging import Client, Logger
 from k8s_client import K8sClient
 
 PROPERTY_ORDER = "order"
@@ -32,8 +32,8 @@ class OrderType(Enum):
 def init_logger() -> Logger:
     client = Client()
     client.setup_logging()
-    logger = getLogger()
-    logger.setLevel(DEBUG)
+    logger = client.logger(__name__)
+    return logger
 
 
 def get_order_type(value: str) -> OrderType:
@@ -111,7 +111,7 @@ def delete() -> bool:
         time.sleep(interval)
         interval = interval * 2
         if interval >= 300:
-            logger.warn("Delete faild.")
+            logger.warn("Delete failed.")
             return False
 
 
