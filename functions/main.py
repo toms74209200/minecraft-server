@@ -1,6 +1,7 @@
 import glob
 import time
 from enum import Enum, auto
+from logging import DEBUG, getLogger
 
 import flask
 import functions_framework
@@ -21,13 +22,11 @@ from k8s_client import K8sClient
 PROPERTY_ORDER = "order"
 INTERVAL_SECONDS = 10
 
-from logging import getLogger, DEBUG
 
 logging_client = Client()
 logging_client.setup_logging()
 logger = getLogger(__name__)
 logger.setLevel(DEBUG)
-
 
 
 class OrderType(Enum):

@@ -23,7 +23,6 @@
 		".env"
 	],
 	"remoteEnv": {
-		"GITHUB_OWNER": "${containerEnv:GITHUB_OWNER}",
 		"GITHUB_REPOSITORY": "${containerEnv:GITHUB_REPOSITORY}"
 	},
 	// Use 'postCreateCommand' to run commands after the container is created.
