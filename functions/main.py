@@ -124,13 +124,6 @@ def manage(request: flask.Request):
     if request.method != "POST":
         return make_response("Method Not Allowed", 405)
 
-    authorization = request.authorization
-    if not authorization:
-        return make_response("Unauthorized", 401)
-
-    if not verify(authorization):
-        return make_response("Unauthorized", 401)
-
     if not request.is_json:
         return make_response("Bad Request", 400)
 
