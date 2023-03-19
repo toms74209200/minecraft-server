@@ -15,7 +15,7 @@ from env import (
     SERVICE_NAMESPACE,
 )
 from flask import make_response
-from github_client import extract_archive, get_latest_release, get_release_archive
+from github_client import delete_archive, extract_archive, get_latest_release, get_release_archive
 from google.cloud.logging import Client
 from k8s_client import K8sClient
 
@@ -47,6 +47,7 @@ def fetch_resources():
     archive = f"{result[PROPERTY_KEY_NAME]}.tar.gz"
     get_release_archive(result[PROPERTY_KEY_TARBALL], archive)
     extract_archive(archive)
+    delete_archive(archive)
 
 
 def create() -> bool:

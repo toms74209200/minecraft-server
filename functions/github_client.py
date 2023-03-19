@@ -1,8 +1,9 @@
+import os
 import shutil
 import tarfile
 
 import requests
-from env import GITHUB_REPOSITORY, PROPERTY_KEY_NAME, PROPERTY_KEY_TARBALL
+from env import DOWNLOAD_PATH, ENV, GITHUB_REPOSITORY, PROPERTY_KEY_NAME, PROPERTY_KEY_TARBALL
 
 GITHUB_API_URL = "https://api.github.com"
 GITHUB_API_REPOSITORY_PATH = "/repos"
@@ -28,13 +29,15 @@ def get_release_archive(url: str, file_name: str) -> None:
     response = requests.get(url, headers=headers, stream=True)
     if response.status_code != 200:
         return
-    with open(file_name, "wb") as f:
+    file_path = file_name if ENV == "dev" else os.path.join(DOWNLOAD_PATH, file_name)
+    with open(file_path, "wb") as f:
         f.write(response.raw.read())
 
 
 def extract_archive(file: str) -> None:
     yaml_files = []
-    with tarfile.open(file, "r:gz") as f:
+    file_path = file if ENV == "dev" else os.path.join(DOWNLOAD_PATH, file)
+    with tarfile.open(file_path, "r:gz") as f:
         menbers = f.getnames()
         for i in menbers:
             if "yml" in i:
@@ -45,8 +48,14 @@ def extract_archive(file: str) -> None:
         shutil.move(i, ".")
 
 
+def delete_archive(file: str) -> None:
+    file_path = file if ENV == "dev" else os.path.join(DOWNLOAD_PATH, file)
+    os.remove(file_path)
+
+
 if __name__ == "__main__":
     result = get_latest_release()
     archive = f"{result[PROPERTY_KEY_NAME]}.tar.gz"
     get_release_archive(result[PROPERTY_KEY_TARBALL], archive)
     extract_archive(archive)
+    delete_archive(archive)
