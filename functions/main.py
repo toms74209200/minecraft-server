@@ -21,19 +21,15 @@ from k8s_client import K8sClient
 PROPERTY_ORDER = "order"
 INTERVAL_SECONDS = 10
 
-logger: Logger
-
 
 class OrderType(Enum):
     CREATE = auto()
     DELETE = auto()
 
 
-def init_logger() -> Logger:
-    client = Client()
-    client.setup_logging()
-    logger = client.logger(__name__)
-    return logger
+client = Client()
+client.setup_logging()
+logger = client.logger(__name__)
 
 
 def get_order_type(value: str) -> OrderType:
