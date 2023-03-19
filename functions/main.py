@@ -15,13 +15,19 @@ from env import (
 )
 from flask import make_response
 from github_client import extract_archive, get_latest_release, get_release_archive
-from google.cloud.logging import Client, Logger
+from google.cloud.logging import Client
 from k8s_client import K8sClient
 
 PROPERTY_ORDER = "order"
 INTERVAL_SECONDS = 10
 
-logger: Logger
+from logging import getLogger, DEBUG
+
+logging_client = Client()
+logging_client.setup_logging()
+logger = getLogger(__name__)
+logger.setLevel(DEBUG)
+
 
 
 class OrderType(Enum):
@@ -111,10 +117,6 @@ def delete() -> bool:
 # Register an HTTP function with the Functions Framework
 @functions_framework.http
 def manage(request: flask.Request):
-    client = Client()
-    client.setup_logging()
-    logger = client.logger(__name__)
-
     logger.info(f"request: {request}")
     if request.method != "POST":
         return make_response("Method Not Allowed", 405)
