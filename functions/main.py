@@ -1,7 +1,6 @@
 import glob
 import time
 from enum import Enum, auto
-from logging import DEBUG, getLogger
 
 import flask
 import functions_framework
@@ -16,19 +15,26 @@ from env import (
 )
 from flask import make_response
 from github_client import extract_archive, get_latest_release, get_release_archive
+from google.cloud.logging import DEBUG, Client, Logger, getLogger
 from k8s_client import K8sClient
 from verify import verify
 
-logger = getLogger(__name__)
-logger.setLevel(DEBUG)
-
 PROPERTY_ORDER = "order"
 INTERVAL_SECONDS = 10
+
+logger: Logger
 
 
 class OrderType(Enum):
     CREATE = auto()
     DELETE = auto()
+
+
+def init_logger() -> Logger:
+    client = Client()
+    client.setup_logging()
+    logger = getLogger()
+    logger.setLevel(DEBUG)
 
 
 def get_order_type(value: str) -> OrderType:
@@ -113,6 +119,7 @@ def delete() -> bool:
 # Register an HTTP function with the Functions Framework
 @functions_framework.http
 def manage(request: flask.Request):
+    logger = init_logger()
     logger.info(f"request: {request}")
     if request.method != "POST":
         return make_response("Method Not Allowed", 405)
