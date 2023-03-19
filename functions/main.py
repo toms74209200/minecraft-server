@@ -21,15 +21,12 @@ from k8s_client import K8sClient
 PROPERTY_ORDER = "order"
 INTERVAL_SECONDS = 10
 
+logger: Logger
+
 
 class OrderType(Enum):
     CREATE = auto()
     DELETE = auto()
-
-
-client = Client()
-client.setup_logging()
-logger = client.logger(__name__)
 
 
 def get_order_type(value: str) -> OrderType:
@@ -114,6 +111,10 @@ def delete() -> bool:
 # Register an HTTP function with the Functions Framework
 @functions_framework.http
 def manage(request: flask.Request):
+    client = Client()
+    client.setup_logging()
+    logger = client.logger(__name__)
+
     logger.info(f"request: {request}")
     if request.method != "POST":
         return make_response("Method Not Allowed", 405)
