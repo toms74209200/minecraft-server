@@ -114,7 +114,6 @@ def delete() -> bool:
 # Register an HTTP function with the Functions Framework
 @functions_framework.http
 def manage(request: flask.Request):
-    logger = init_logger()
     logger.info(f"request: {request}")
     if request.method != "POST":
         return make_response("Method Not Allowed", 405)
