@@ -15,24 +15,6 @@ from env import (
 )
 from kubernetes import client, config
 
-config.load_kube_config()
-
-
-def get_pods(label: str) -> list[Any]:
-    v1 = client.CoreV1Api()
-    ret = v1.list_pod_for_all_namespaces(watch=False)
-    pods = []
-    for i in ret.items:
-        if label in i.metadata.name:
-            pods.append(i)
-    return pods
-
-
-def get_services(namespace: str) -> list[Any]:
-    v1 = client.CoreV1Api()
-    services = v1.list_namespaced_service(namespace=namespace)
-    return services.items
-
 
 def load_yaml(file: str):
     file_path = file if ENV == "local" else os.path.join(os.path.dirname(__file__), file)
@@ -42,43 +24,59 @@ def load_yaml(file: str):
         return yaml.safe_load(f)
 
 
-def apply_deployment(file: str) -> None:
-    resource = load_yaml(file)
-    v1 = client.AppsV1Api()
-    v1.create_namespaced_deployment(body=resource, namespace=DEPLOYMENT_NAMESPACE)
+class K8sClient:
+    def __init__():
+        config.load_kube_config()
 
+    def get_pods(label: str) -> list[Any]:
+        v1 = client.CoreV1Api()
+        ret = v1.list_pod_for_all_namespaces(watch=False)
+        pods = []
+        for i in ret.items:
+            if label in i.metadata.name:
+                pods.append(i)
+        return pods
 
-def delete_deployment(name: str) -> None:
-    v1 = client.AppsV1Api()
-    v1.delete_namespaced_deployment(name=name, namespace=DEPLOYMENT_NAMESPACE)
+    def get_services(namespace: str) -> list[Any]:
+        v1 = client.CoreV1Api()
+        services = v1.list_namespaced_service(namespace=namespace)
+        return services.items
 
+    def apply_deployment(file: str) -> None:
+        resource = load_yaml(file)
+        v1 = client.AppsV1Api()
+        v1.create_namespaced_deployment(body=resource, namespace=DEPLOYMENT_NAMESPACE)
 
-def apply_service(file: str) -> None:
-    resource = load_yaml(file)
-    v1 = client.CoreV1Api()
-    v1.create_namespaced_service(body=resource, namespace=SERVICE_NAMESPACE)
+    def delete_deployment(name: str) -> None:
+        v1 = client.AppsV1Api()
+        v1.delete_namespaced_deployment(name=name, namespace=DEPLOYMENT_NAMESPACE)
 
+    def apply_service(file: str) -> None:
+        resource = load_yaml(file)
+        v1 = client.CoreV1Api()
+        v1.create_namespaced_service(body=resource, namespace=SERVICE_NAMESPACE)
 
-def delete_service(name: str) -> None:
-    v1 = client.CoreV1Api()
-    v1.delete_namespaced_service(name=name, namespace=SERVICE_NAMESPACE)
+    def delete_service(name: str) -> None:
+        v1 = client.CoreV1Api()
+        v1.delete_namespaced_service(name=name, namespace=SERVICE_NAMESPACE)
 
 
 if __name__ == "__main__":
     interval = 10
+    k8s = K8sClient()
 
-    apply_deployment(DEPLOYMENT_FILE_PATH)
-    apply_service(LOADBALANCER_FILE_PATH)
+    k8s.apply_deployment(DEPLOYMENT_FILE_PATH)
+    k8s.apply_service(LOADBALANCER_FILE_PATH)
 
     print("Creating.")
     created = False
     while not created:
         pods_created = False
-        pods = get_pods(POD_LABEL)
+        pods = k8s.get_pods(POD_LABEL)
         pods_created = len(pods) > 0
         for i in pods:
             print("%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
-        services = get_services(SERVICE_NAMESPACE)
+        services = k8s.get_services(SERVICE_NAMESPACE)
         service_created = False
         for i in services:
             print(
@@ -102,15 +100,15 @@ if __name__ == "__main__":
 
     interval = 10
 
-    delete_deployment(POD_LABEL)
-    delete_service(LOADBALANCER_NAME)
+    k8s.delete_deployment(POD_LABEL)
+    k8s.delete_service(LOADBALANCER_NAME)
 
     print("Deleting.")
     deleted = False
     while not deleted:
-        pods = get_pods(POD_LABEL)
+        pods = k8s.get_pods(POD_LABEL)
         pods_deleted = not pods
-        services = get_services(SERVICE_NAMESPACE)
+        services = k8s.get_services(SERVICE_NAMESPACE)
         service_deleted = False
         for i in services:
             service_deleted = i.metadata.name != LOADBALANCER_NAME
