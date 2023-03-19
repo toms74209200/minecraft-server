@@ -10,7 +10,7 @@ LOADBALANCER_NAME = os.environ.get("LOADBALANCER_NAME", "minecraft-lb")
 SERVICE_NAMESPACE = os.environ.get("SERVICE_NAMESPACE", "default")
 DEPLOYMENT_NAMESPACE = os.environ.get("DEPLOYMENT_NAMESPACE", "default")
 
-GITHUB_OWNER = os.environ.get("OWNER")
 GITHUB_REPOSITORY = os.environ.get("REPOSITORY")
 PROPERTY_KEY_TARBALL = "tarball_url"
 PROPERTY_KEY_NAME = "name"
+DOWNLOAD_PATH = "/tmp"

@@ -23,7 +23,7 @@
 		".env"
 	],
 	"remoteEnv": {
-		"GITHUB_REPOSITORY": "${containerEnv:GITHUB_REPOSITORY}"
+		"REPOSITORY": "${containerEnv:REPOSITORY}"
 	},
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "pip3 install -r functions/requirements.txt"

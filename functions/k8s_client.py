@@ -17,7 +17,7 @@ from kubernetes import client, config
 
 
 def load_yaml(file: str):
-    file_path = file if ENV == "local" else os.path.join(os.path.dirname(__file__), file)
+    file_path = file if ENV == "dev" else os.path.join(os.path.dirname(__file__), file)
     if not os.path.isfile(file_path):
         return
     with open(file_path) as f:
