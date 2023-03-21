@@ -45,7 +45,8 @@ def extract_archive(file: str) -> None:
                 f.extract(i, path=DOWNLOAD_PATH)
 
     for i in yaml_files:
-        shutil.move(i, DOWNLOAD_PATH)
+        p = i if ENV == "dev" else os.path.join(DOWNLOAD_PATH, i)
+        shutil.move(p, DOWNLOAD_PATH)
 
 
 def delete_archive(file: str) -> None:
