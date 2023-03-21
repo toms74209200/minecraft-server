@@ -42,10 +42,10 @@ def extract_archive(file: str) -> None:
         for i in menbers:
             if "yml" in i:
                 yaml_files.append(i)
-                f.extract(i)
+                f.extract(i, path=DOWNLOAD_PATH)
 
     for i in yaml_files:
-        shutil.move(i, ".")
+        shutil.move(i, DOWNLOAD_PATH)
 
 
 def delete_archive(file: str) -> None:

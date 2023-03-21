@@ -7,6 +7,7 @@ import yaml
 from env import (
     DEPLOYMENT_FILE_PATH,
     DEPLOYMENT_NAMESPACE,
+    DOWNLOAD_PATH,
     ENV,
     LOADBALANCER_FILE_PATH,
     LOADBALANCER_NAME,
@@ -17,7 +18,7 @@ from kubernetes import client, config
 
 
 def load_yaml(file: str):
-    file_path = file if ENV == "dev" else os.path.join(os.path.dirname(__file__), file)
+    file_path = file if ENV == "dev" else os.path.join(os.path.dirname(DOWNLOAD_PATH), file)
     if not os.path.isfile(file_path):
         return
     with open(file_path) as f:
