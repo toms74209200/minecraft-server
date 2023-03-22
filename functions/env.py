@@ -10,6 +10,10 @@ LOADBALANCER_NAME = os.environ.get("LOADBALANCER_NAME", "minecraft-lb")
 SERVICE_NAMESPACE = os.environ.get("SERVICE_NAMESPACE", "default")
 DEPLOYMENT_NAMESPACE = os.environ.get("DEPLOYMENT_NAMESPACE", "default")
 
+CLUSTER_NAME = os.environ.get("CLUSTER_NAME")
+REGION = os.environ.get("REGION")
+PROJECT_ID = os.environ.get("PROJECT_ID")
+
 GITHUB_REPOSITORY = os.environ.get("REPOSITORY")
 PROPERTY_KEY_TARBALL = "tarball_url"
 PROPERTY_KEY_NAME = "name"

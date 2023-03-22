@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 import time
 from typing import Any
@@ -26,7 +27,12 @@ def load_yaml(file: str):
 
 
 class K8sClient:
-    def __init__(self):
+    def __init__(self, *, cluster_name: str, region: str, project_id: str):
+        if ENV != "dev":
+            subprocess.run(
+                f"gcloud container clusters get-credentials {cluster_name} --region {region} --project {project_id}",
+                check=True,
+            )
         config.load_kube_config()
 
     def get_pods(label: str) -> list[Any]:
