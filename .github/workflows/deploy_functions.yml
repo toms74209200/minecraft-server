@@ -26,5 +26,5 @@ jobs:
         region: asia-northeast1
         source_dir: "functions"
         env_vars: |
-          OWNER=${{ github.repository_owner }},REPOSITORY=${{ github.repository }},ENV=pro,DEPLOYMENT_FILE_NAME=deployment.yml,LOADBALANCER_FILE_NAME=loadbalancer.yml,DEPLOYMENT_FILE_PATH="",LOADBALANCER_FILE_PATH="",POD_LABEL=minecraft-server,LOADBALANCER_NAME=minecraft-lb,SERVICE_NAMESPACE=default,DEPLOYMENT_NAMESPACE=default
+          OWNER=${{ github.repository_owner }},REPOSITORY=${{ github.repository }},ENV=pro,DEPLOYMENT_FILE_NAME=deployment.yml,LOADBALANCER_FILE_NAME=loadbalancer.yml,DEPLOYMENT_FILE_PATH=/tmp,LOADBALANCER_FILE_PATH="/tmp",POD_LABEL=minecraft-server,LOADBALANCER_NAME=minecraft-lb,SERVICE_NAMESPACE=default,DEPLOYMENT_NAMESPACE=default
         service_account_email: ${{ secrets.FUNCTIONS_SERVICE_ACCOUNT }}

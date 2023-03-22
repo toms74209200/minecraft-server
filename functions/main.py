@@ -7,6 +7,8 @@ import flask
 import functions_framework
 from env import (
     DEPLOYMENT_FILE_PATH,
+    DOWNLOAD_PATH,
+    ENV,
     LOADBALANCER_FILE_PATH,
     LOADBALANCER_NAME,
     POD_LABEL,
@@ -53,7 +55,8 @@ def fetch_resources():
 def create() -> bool:
     logger.info("create")
     fetch_resources()
-    resources = glob.glob("*.yml")
+    root_dir = "." if ENV == "dev" else DOWNLOAD_PATH
+    resources = glob.glob("*.yml", root_dir=root_dir)
     logger.info(f"resources: {resources}")
     k8s = K8sClient()
     k8s.apply_deployment(DEPLOYMENT_FILE_PATH)
