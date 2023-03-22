@@ -26,7 +26,7 @@ def load_yaml(file: str):
 
 
 class K8sClient:
-    def __init__():
+    def __init__(self):
         config.load_kube_config()
 
     def get_pods(label: str) -> list[Any]:
