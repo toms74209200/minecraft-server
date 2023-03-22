@@ -32,6 +32,7 @@ class K8sClient:
             subprocess.run(
                 f"gcloud container clusters get-credentials {cluster_name} --region {region} --project {project_id}",
                 check=True,
+                shell=True,
             )
         config.load_kube_config()
 
