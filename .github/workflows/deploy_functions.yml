@@ -32,5 +32,5 @@ jobs:
         region: ${{ vars.REGION }}
         source_dir: "functions"
         env_vars: |
-          OWNER=${{ github.repository_owner }},REPOSITORY=${{ github.repository }},ENV=pro,DEPLOYMENT_FILE_NAME=deployment.yml,LOADBALANCER_FILE_NAME=loadbalancer.yml,DEPLOYMENT_FILE_PATH=/tmp,LOADBALANCER_FILE_PATH="/tmp",POD_LABEL=minecraft-server,LOADBALANCER_NAME=minecraft-lb,SERVICE_NAMESPACE=default,DEPLOYMENT_NAMESPACE=default,CLUSTER_NAME=${{ secrets.CLUSTER_NAME }},REGION=${{ vars.REGION }},PROJECT_ID=${{ secrets.PROJECT_ID }}
+          OWNER=${{ github.repository_owner }},REPOSITORY=${{ github.repository }},ENV=pro,DEPLOYMENT_FILE_NAME=deployment.yml,LOADBALANCER_FILE_NAME=loadbalancer.yml,DEPLOYMENT_FILE_PATH=/tmp,LOADBALANCER_FILE_PATH=/tmp,POD_LABEL=minecraft-server,LOADBALANCER_NAME=minecraft-lb,SERVICE_NAMESPACE=default,DEPLOYMENT_NAMESPACE=default,CLUSTER_NAME=${{ secrets.CLUSTER_NAME }},REGION=${{ vars.REGION }},PROJECT_ID=${{ secrets.PROJECT_ID }}
         service_account_email: ${{ secrets.FUNCTIONS_SERVICE_ACCOUNT }}
