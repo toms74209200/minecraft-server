@@ -6,17 +6,14 @@ from logging import DEBUG, getLogger
 import flask
 import functions_framework
 from env import (
-    CLUSTER_NAME,
     DEPLOYMENT_FILE_PATH,
     DOWNLOAD_PATH,
     ENV,
     LOADBALANCER_FILE_PATH,
     LOADBALANCER_NAME,
     POD_LABEL,
-    PROJECT_ID,
     PROPERTY_KEY_NAME,
     PROPERTY_KEY_TARBALL,
-    REGION,
     SERVICE_NAMESPACE,
 )
 from flask import make_response
@@ -61,7 +58,8 @@ def create() -> bool:
     root_dir = "." if ENV == "dev" else DOWNLOAD_PATH
     resources = glob.glob("*.yml", root_dir=root_dir)
     logger.info(f"resources: {resources}")
-    k8s = K8sClient(cluster_name=CLUSTER_NAME, region=REGION, project_id=PROJECT_ID)
+    config_file = "~/.kube/config" if ENV == "dev" else "./config"
+    k8s = K8sClient(config_file)
     k8s.apply_deployment(DEPLOYMENT_FILE_PATH)
     k8s.apply_service(LOADBALANCER_FILE_PATH)
 

@@ -27,14 +27,8 @@ def load_yaml(file: str):
 
 
 class K8sClient:
-    def __init__(self, *, cluster_name: str, region: str, project_id: str):
-        if ENV != "dev":
-            subprocess.run(
-                f"gcloud container clusters get-credentials {cluster_name} --region {region} --project {project_id}",
-                check=True,
-                shell=True,
-            )
-        config.load_kube_config()
+    def __init__(self, config_file: str):
+        config.load_kube_config(config_file)
 
     def get_pods(label: str) -> list[Any]:
         v1 = client.CoreV1Api()

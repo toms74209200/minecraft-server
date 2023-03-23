@@ -18,12 +18,18 @@ jobs:
       with:
         workload_identity_provider:  ${{ secrets.FUNCTIONS_IP }}
         service_account: ${{ secrets.FUNCTIONS_SERVICE_ACCOUNT }}
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
+    - name: 'Copy kube config'
+      run: |
+        gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME }} --region ${{ vars.REGION }} --project ${{ secrets.PROJECT_ID }} > /dev/null
+        cp ~/.kube/config ./functions
     - uses: 'google-github-actions/deploy-cloud-functions@v1'
       with:
         name: ${{ vars.FUNCTIONS_NAME }}
         runtime: python311
         entry_point: "manage"
-        region: asia-northeast1
+        region: ${{ vars.REGION }}
         source_dir: "functions"
         env_vars: |
           OWNER=${{ github.repository_owner }},REPOSITORY=${{ github.repository }},ENV=pro,DEPLOYMENT_FILE_NAME=deployment.yml,LOADBALANCER_FILE_NAME=loadbalancer.yml,DEPLOYMENT_FILE_PATH=/tmp,LOADBALANCER_FILE_PATH="/tmp",POD_LABEL=minecraft-server,LOADBALANCER_NAME=minecraft-lb,SERVICE_NAMESPACE=default,DEPLOYMENT_NAMESPACE=default,CLUSTER_NAME=${{ secrets.CLUSTER_NAME }},REGION=${{ vars.REGION }},PROJECT_ID=${{ secrets.PROJECT_ID }}
