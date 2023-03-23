@@ -1,5 +1,4 @@
 import os
-import subprocess
 import sys
 import time
 from typing import Any
@@ -30,7 +29,7 @@ class K8sClient:
     def __init__(self, config_file: str):
         config.load_kube_config(config_file)
 
-    def get_pods(label: str) -> list[Any]:
+    def get_pods(self, label: str) -> list[Any]:
         v1 = client.CoreV1Api()
         ret = v1.list_pod_for_all_namespaces(watch=False)
         pods = []
@@ -39,26 +38,26 @@ class K8sClient:
                 pods.append(i)
         return pods
 
-    def get_services(namespace: str) -> list[Any]:
+    def get_services(self, namespace: str) -> list[Any]:
         v1 = client.CoreV1Api()
         services = v1.list_namespaced_service(namespace=namespace)
         return services.items
 
-    def apply_deployment(file: str) -> None:
+    def apply_deployment(self, file: str) -> None:
         resource = load_yaml(file)
         v1 = client.AppsV1Api()
         v1.create_namespaced_deployment(body=resource, namespace=DEPLOYMENT_NAMESPACE)
 
-    def delete_deployment(name: str) -> None:
+    def delete_deployment(self, name: str) -> None:
         v1 = client.AppsV1Api()
         v1.delete_namespaced_deployment(name=name, namespace=DEPLOYMENT_NAMESPACE)
 
-    def apply_service(file: str) -> None:
+    def apply_service(self, file: str) -> None:
         resource = load_yaml(file)
         v1 = client.CoreV1Api()
         v1.create_namespaced_service(body=resource, namespace=SERVICE_NAMESPACE)
 
-    def delete_service(name: str) -> None:
+    def delete_service(self, name: str) -> None:
         v1 = client.CoreV1Api()
         v1.delete_namespaced_service(name=name, namespace=SERVICE_NAMESPACE)
 
