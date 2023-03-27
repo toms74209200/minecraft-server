@@ -15,8 +15,12 @@ from kubernetes import client, config
 ENV = os.environ.get("ENV", "dev")
 DEPLOYMENT_FILE_NAME = os.environ.get("DEPLOYMENT_FILE_NAME", "deployment.yml")
 LOADBALANCER_FILE_NAME = os.environ.get("LOADBALANCER_FILE_NAME", "loadbalancer.yml")
-DEPLOYMENT_FILE_PATH = os.environ.get("DEPLOYMENT_FILE_PATH", "../k8s") + "/" + DEPLOYMENT_FILE_NAME
-LOADBALANCER_FILE_PATH = os.environ.get("LOADBALANCER_FILE_PATH", "../k8s") + "/" + LOADBALANCER_FILE_NAME
+DEPLOYMENT_FILE_PATH = (
+    os.environ.get("DEPLOYMENT_FILE_PATH", "../k8s") + "/" + DEPLOYMENT_FILE_NAME
+)
+LOADBALANCER_FILE_PATH = (
+    os.environ.get("LOADBALANCER_FILE_PATH", "../k8s") + "/" + LOADBALANCER_FILE_NAME
+)
 POD_LABEL = os.environ.get("POD_LABEL", "minecraft-server")
 LOADBALANCER_NAME = os.environ.get("LOADBALANCER_NAME", "minecraft-lb")
 SERVICE_NAMESPACE = os.environ.get("SERVICE_NAMESPACE", "default")
@@ -94,7 +98,9 @@ def fetch_resources():
 
 
 def load_yaml(file: str):
-    file_path = file if ENV == "dev" else os.path.join(os.path.dirname(DOWNLOAD_PATH), file)
+    file_path = (
+        file if ENV == "dev" else os.path.join(os.path.dirname(DOWNLOAD_PATH), file)
+    )
     if not os.path.isfile(file_path):
         return
     with open(file_path) as f:
@@ -105,12 +111,13 @@ class K8sClient:
     def __init__(self):
         config.load_kube_config()
 
-    def get_pods(self) -> list[Any]:
+    def get_pods(self, label: str) -> list[Any]:
         v1 = client.CoreV1Api()
         ret = v1.list_pod_for_all_namespaces(watch=False)
         pods = []
         for i in ret.items:
-            pods.append(i)
+            if label in i.metadata.name:
+                pods.append(i)
         return pods
 
     def get_services(self, namespace: str) -> list[Any]:
@@ -154,7 +161,9 @@ if __name__ == "__main__":
         pods = k8s.get_pods(POD_LABEL)
         pods_created = len(pods) > 0
         for i in pods:
-            logger.debug("%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
+            logger.debug(
+                "%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name)
+            )
         services = k8s.get_services(SERVICE_NAMESPACE)
         service_created = False
         for i in services:
