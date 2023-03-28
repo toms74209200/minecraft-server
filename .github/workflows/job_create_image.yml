@@ -29,8 +29,8 @@ jobs:
     - uses: docker/build-push-action@v3
       with:
         context: ./deploy-job
-        file: deploy-job/python-gcloud-k8s-client-create.Dockerfile
+        file: deploy-job/python-gcloud-k8s-client-job.Dockerfile
         push: true
         tags: |
-          asia.gcr.io/${{ secrets.PROJECT_ID }}/python-gcloud-k8s-client-create:latest
-          asia.gcr.io/${{ secrets.PROJECT_ID }}/python-gcloud-k8s-client-create:${{ github.ref_name }}
+          asia.gcr.io/${{ secrets.PROJECT_ID }}/python-gcloud-k8s-client-job:latest
+          asia.gcr.io/${{ secrets.PROJECT_ID }}/python-gcloud-k8s-client-job:${{ github.ref_name }}

@@ -4,6 +4,7 @@ import shutil
 import sys
 import tarfile
 import time
+from enum import Enum, auto
 from logging import DEBUG, getLogger
 from typing import Any
 
@@ -15,12 +16,8 @@ from kubernetes import client, config
 ENV = os.environ.get("ENV", "dev")
 DEPLOYMENT_FILE_NAME = os.environ.get("DEPLOYMENT_FILE_NAME", "deployment.yml")
 LOADBALANCER_FILE_NAME = os.environ.get("LOADBALANCER_FILE_NAME", "loadbalancer.yml")
-DEPLOYMENT_FILE_PATH = (
-    os.environ.get("DEPLOYMENT_FILE_PATH", "../k8s") + "/" + DEPLOYMENT_FILE_NAME
-)
-LOADBALANCER_FILE_PATH = (
-    os.environ.get("LOADBALANCER_FILE_PATH", "../k8s") + "/" + LOADBALANCER_FILE_NAME
-)
+DEPLOYMENT_FILE_PATH = os.environ.get("DEPLOYMENT_FILE_PATH", "../k8s") + "/" + DEPLOYMENT_FILE_NAME
+LOADBALANCER_FILE_PATH = os.environ.get("LOADBALANCER_FILE_PATH", "../k8s") + "/" + LOADBALANCER_FILE_NAME
 POD_LABEL = os.environ.get("POD_LABEL", "minecraft-server")
 LOADBALANCER_NAME = os.environ.get("LOADBALANCER_NAME", "minecraft-lb")
 SERVICE_NAMESPACE = os.environ.get("SERVICE_NAMESPACE", "default")
@@ -46,6 +43,19 @@ logging_client = Client()
 logging_client.setup_logging()
 logger = getLogger(__name__)
 logger.setLevel(DEBUG)
+
+
+class JobType(Enum):
+    CREATE = auto()
+    DELETE = auto()
+
+
+def get_job_type(value: str) -> JobType:
+    if value == "create":
+        return JobType.CREATE
+    if value == "delete":
+        return JobType.DELETE
+    return JobType.DELETE
 
 
 def get_latest_release() -> dict:
@@ -98,9 +108,7 @@ def fetch_resources():
 
 
 def load_yaml(file: str):
-    file_path = (
-        file if ENV == "dev" else os.path.join(os.path.dirname(DOWNLOAD_PATH), file)
-    )
+    file_path = file if ENV == "dev" else os.path.join(os.path.dirname(DOWNLOAD_PATH), file)
     if not os.path.isfile(file_path):
         return
     with open(file_path) as f:
@@ -144,7 +152,7 @@ class K8sClient:
         v1.delete_namespaced_service(name=name, namespace=SERVICE_NAMESPACE)
 
 
-if __name__ == "__main__":
+def create() -> bool:
     logger.info("Start creating")
     fetch_resources()
     root_dir = "." if ENV == "dev" else DOWNLOAD_PATH
@@ -161,9 +169,7 @@ if __name__ == "__main__":
         pods = k8s.get_pods(POD_LABEL)
         pods_created = len(pods) > 0
         for i in pods:
-            logger.debug(
-                "%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name)
-            )
+            logger.debug("%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
         services = k8s.get_services(SERVICE_NAMESPACE)
         service_created = False
         for i in services:
@@ -179,9 +185,46 @@ if __name__ == "__main__":
             service_created = i.metadata.name == LOADBALANCER_NAME
         created = pods_created and service_created
         if created:
-            sys.exit()
+            return True
         time.sleep(interval)
         interval = interval * 2
         if interval >= 300:
             logger.warn("Create failed.")
-            sys.exit(1)
+            return False
+
+
+def delete() -> bool:
+    logger.info("Start deleting")
+    k8s = K8sClient()
+    k8s.delete_deployment(POD_LABEL)
+    k8s.delete_service(LOADBALANCER_NAME)
+    deleted = False
+    interval = INTERVAL_SECONDS
+    while not deleted:
+        pods = k8s.get_pods(POD_LABEL)
+        pods_deleted = not pods
+        services = k8s.get_services(SERVICE_NAMESPACE)
+        service_deleted = False
+        for i in services:
+            service_deleted = i.metadata.name != LOADBALANCER_NAME
+        deleted = pods_deleted and service_deleted
+        if delete:
+            return True
+        time.sleep(interval)
+        interval = interval * 2
+        if interval >= 300:
+            logger.warn("Delete failed.")
+            return False
+
+
+if __name__ == "__main__":
+    args = sys.argv
+    if len(args) == 1:
+        sys.exit(1)
+    success = False
+    if get_job_type(args[1]) == JobType.CREATE:
+        success = create()
+    else:
+        success = delete()
+    if not success:
+        sys.exit(1)
