@@ -5,7 +5,7 @@ import sys
 import tarfile
 import time
 from enum import Enum, auto
-from logging import DEBUG, getLogger
+from logging import DEBUG, StreamHandler, getLogger
 from typing import Any
 
 import requests
@@ -43,6 +43,8 @@ logging_client = Client()
 logging_client.setup_logging()
 logger = getLogger(__name__)
 logger.setLevel(DEBUG)
+handler = StreamHandler(sys.stdout)
+logger.addHandler(handler)
 
 
 class JobType(Enum):
