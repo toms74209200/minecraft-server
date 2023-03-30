@@ -84,16 +84,18 @@ def get_release_archive(url: str, file_name: str) -> None:
 def extract_archive(file: str) -> None:
     yaml_files = []
     file_path = file if ENV == "dev" else os.path.join(DOWNLOAD_PATH, file)
+    extract_path = "." if ENV == "dev" else DOWNLOAD_PATH
     with tarfile.open(file_path, "r:gz") as f:
         menbers = f.getnames()
         for i in menbers:
             if "yml" in i:
                 yaml_files.append(i)
-                f.extract(i, path=DOWNLOAD_PATH)
+                f.extract(i, path=extract_path)
 
+    move_path = "." if ENV == "dev" else DOWNLOAD_PATH
     for i in yaml_files:
         p = i if ENV == "dev" else os.path.join(DOWNLOAD_PATH, i)
-        shutil.move(p, DOWNLOAD_PATH)
+        shutil.move(p, move_path)
 
 
 def delete_archive(file: str) -> None:
