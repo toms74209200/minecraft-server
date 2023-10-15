@@ -1,4 +1,4 @@
-FROM ghcr.io/toms74209200/python-gcloud-k8s-client:0.0.3
+FROM ghcr.io/toms74209200/python-gcloud-k8s-client:0.0.6
 
 COPY requirements.txt /requirements.txt
 RUN pip install -U pip && pip install --no-cache-dir -r /requirements.txt
