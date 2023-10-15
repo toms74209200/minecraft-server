@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - **/requirements.txt
+      - "**/requirements.txt"
 
 permissions:
   pull-requests: write
