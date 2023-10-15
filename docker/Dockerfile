@@ -1,4 +1,4 @@
-ARG SPIGOT_VERSION=1.19.3
+ARG SPIGOT_VERSION=1.20.1
 
 FROM openjdk:17.0.2-slim-bullseye AS build-spigotmc
 
