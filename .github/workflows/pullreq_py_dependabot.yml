@@ -40,7 +40,7 @@ jobs:
         run: echo LATEST_TAG=`git tag -l --sort=-v:refname | grep v | head -n1` >> $GITHUB_ENV
       - name: set new tag
         run: echo NEW_TAG=`echo ${{ env.LATEST_TAG }} | ( IFS=".$IFS" ; read a b c && echo $a.$b.$((c + 1)) )` >> $GITHUB_ENV
-      - uses: richardsimko/update-tag@v1.0.10
+      - uses: richardsimko/update-tag@v1.0.11
         with:
           tag_name: ${{ env.NEW_TAG }}
         env:
