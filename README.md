@@ -4,7 +4,7 @@ Minecraft server infra.
 
 ## Mincraft Server Image
 
-This image based on gcr.io/distroless/java17-debian11. Minecraft server JAR file from SpigotMC. You can change settings by override server.properties.
+This image based on gcr.io/distroless/java. Minecraft server JAR file from SpigotMC. You can change settings by override server.properties.
 
 ### References
 
