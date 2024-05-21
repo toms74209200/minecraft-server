@@ -1,6 +1,6 @@
-ARG SPIGOT_VERSION=1.20.1
+ARG SPIGOT_VERSION=1.20.4
 
-FROM openjdk:17.0.2-slim-bullseye AS build-spigotmc
+FROM eclipse-temurin:17 AS build-spigotmc
 
 ARG SPIGOT_VERSION
 
@@ -13,7 +13,7 @@ RUN wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/art
     && mv spigot-${SPIGOT_VERSION}.jar server.jar
 RUN echo eula=true > eula.txt
 
-FROM gcr.io/distroless/java17-debian11
+FROM gcr.io/distroless/java17-debian12
 
 COPY --from=build-spigotmc /usr/local/bin/server.jar /usr/local/bin/server.jar
 COPY --from=build-spigotmc /usr/local/bin/eula.txt /usr/local/bin/eula.txt
