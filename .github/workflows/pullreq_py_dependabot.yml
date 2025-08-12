@@ -33,7 +33,7 @@ jobs:
     needs:
       - dependabot-auto-approve
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: fetch commits
         run: git fetch --prune --unshallow
       - name: get latest tag
